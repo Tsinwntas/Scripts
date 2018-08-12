@@ -45,6 +45,7 @@ function newPage(){
 	agentState = states.GET_NAME;
 }
 function getName(){
+	console.log(currentLink +" out of "+links.length);
 	if(newWindow == null)
 		return;
 	var nameSpans = newWindow.document.querySelectorAll("span[itemprop='name']");
@@ -53,6 +54,7 @@ function getName(){
 	agentState = states.GET_PERCENTAGES;
 }
 function getPercentages(){
+	if(newWindow.document.getElementsByClassName("statcont") == undefined) return;
 	var homeStats = newWindow.document.getElementsByClassName("statcont")[0].getElementsByTagName("tr");
 	var awayStats = newWindow.document.getElementsByClassName("statcont")[1].getElementsByTagName("tr");
 	if(homeStats == undefined || awayStats == undefined) return;
@@ -107,7 +109,7 @@ function calculateOdds(){
 	var matchesPlayedAway_away = match.AU25A + match.AO25A;
 	match.TOTAL_GAMES_COMPARED = matchesPlayed_home + matchesPlayed_away;
 	checkFT(match);
-	checkUO(match);
+	checkUO(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away);
 	//checkGG(match);
 
 	agentState = states.RESET;
@@ -117,8 +119,12 @@ function checkFT(match){
 	match.toBet.FT = FT > 0 ? "1" : FT < 0 ? "2" : "X";
 	match.toBet.FT += Math.abs(FT)< 2 && FT != 0 ? "X" : "";
 }
-function checkUO(match){
-	var OU = ((match.HAGS + match.AAGC)/2 + (match.HAGSH + match.AAGCA)/2 + (match.HAGC + match.AAGS)/2 + (match.HAGCH + match.AAGSA)/2)/4;
+function checkUO(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away){
+	var OU = ((match.HAGS*matchesPlayed_home + match.AAGC*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
+		(match.HAGSH*matchesPlayedHome_home + match.AAGCA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away) + 
+		(match.HAGC*matchesPlayed_home + match.AAGS*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
+		(match.HAGCH*matchesPlayedHome_home + match.AAGSA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away))
+	/4;
 	match.toBet.UO = (parseInt(OU)+0.5 - OU > 0 ? "U" : "O") + (parseInt(OU)+".5");
 }
 function reset(){
@@ -126,6 +132,7 @@ function reset(){
 	newWindow.close();
 	newWindow = null;
 	agentState = states.NEW_PAGE;
+	currentLink++;
 }
 function stop(){
 	clearInterval(interval);
