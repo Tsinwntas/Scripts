@@ -3,7 +3,9 @@ var links = [];
 var odds = [];
 var newWindow;
 var currentLink = 0;
+var range =0;
 var isWorking = false;
+var isSingle = false;
 var agentState = 0;
 var states = {
 	NEW_PAGE : 0,
@@ -12,11 +14,30 @@ var states = {
 	CALCULATE_ODDS: 3,
 	RESET: 4
 }
-getLinks();
-var interval = setInterval(startProcess,100);
+var interval;
 
 
+function getAllData(){
+	isSingle = false;
+	getLinks();
+	interval = setInterval(startProcess,100);
+}
+function getRangeData(a,b){
+	isSingle = true;
+	getLinks();
+	currentLink = a;
+	range = b;
+	interval = setInterval(startProcess,100);
+}
+function getSingleData(s){
+	isSingle = true;
+	getLinks();
+	currentLink = s;
+	range = s;
+	interval = setInterval(startProcess,100);
+}
 function getLinks(){
+	links=[];
 	for(var i =0; i < table.children.length; i++){
 		if(table.children[i].className == "tr_0" || table.children[i].className == "tr_1"){
 			links.push(table.children[i].getElementsByTagName("a")[0].href);
@@ -111,6 +132,7 @@ function calculateOdds(){
 	checkFT(match);
 	checkUO(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away);
 	//checkGG(match);
+	checkCorrectScore(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away)
 
 	agentState = states.RESET;
 }
@@ -121,11 +143,23 @@ function checkFT(match){
 }
 function checkUO(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away){
 	var OU = ((match.HAGS*matchesPlayed_home + match.AAGC*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
-		(match.HAGSH*matchesPlayedHome_home + match.AAGCA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away) + 
-		(match.HAGC*matchesPlayed_home + match.AAGS*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
-		(match.HAGCH*matchesPlayedHome_home + match.AAGSA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away))
-	/4;
+		(match.HAGSH*matchesPlayedHome_home + match.AAGCA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away)) /2 + 
+		((match.HAGC*matchesPlayed_home + match.AAGS*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
+		(match.HAGCH*matchesPlayedHome_home + match.AAGSA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away)) /2;
+	/*OU+= ((1.0)*match.HO25/(match.HO25 + match.HU25) - (1.0)*match.HU25/(match.HO25 + match.HU25)) 
+	+ ((1.0)*match.AO25/(match.AO25 + match.AU25) - (1.0)*match.AU25/(match.AO25 + match.AU25)) 
+	+ ((1.0)*match.HO25H/(match.HO25H + match.HU25H) - (1.0)*match.HU25H/(match.HO25H + match.HU25H)) 
+	+ ((1.0)*match.AO25A/(match.AO25A + match.AU25A) - (1.0)*match.AU25A/(match.AO25A + match.AU25A));
+	OU-=0.5;*/
 	match.toBet.UO = (parseInt(OU)+0.5 - OU > 0 ? "U" : "O") + (parseInt(OU)+".5");
+}
+function checkCorrectScore(match,matchesPlayed_home,matchesPlayedHome_home,matchesPlayed_away,matchesPlayedAway_away){
+	match.toBet.CS = 
+		parseInt(((match.HAGS*matchesPlayed_home + match.AAGC*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
+		(match.HAGSH*matchesPlayedHome_home + match.AAGCA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away)) /2)
+		+ " - " +
+		parseInt(((match.HAGC*matchesPlayed_home + match.AAGS*matchesPlayed_away)/(matchesPlayed_home+matchesPlayed_away) + 
+		(match.HAGCH*matchesPlayedHome_home + match.AAGSA*matchesPlayedAway_away)/(matchesPlayedHome_home+matchesPlayedAway_away)) /2);
 }
 function reset(){
 	if(odds[currentLink].toBet == undefined)return;
@@ -133,6 +167,8 @@ function reset(){
 	newWindow = null;
 	agentState = states.NEW_PAGE;
 	currentLink++;
+	if(isSingle && currentLink == range)
+		currentLink = links.length;
 }
 function stop(){
 	clearInterval(interval);
