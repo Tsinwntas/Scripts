@@ -1,0 +1,28 @@
+FC Kuressaare - Trans Narva
+48
+{FT: "2", UO: "O3.5", CS: "1 - 2"}
+******************
+Parnu - Paide
+47
+{FT: "2", UO: "O3.5", CS: "1 - 2"}
+******************
+O Médéa - Ain M'lila
+4
+{FT: "2", UO: "O3.5", CS: "1 - 2"}
+******************
+MC Oran - MO Béjaïa
+4
+{FT: "2", UO: "O3.5", CS: "1 - 2"}
+******************
+Walsall FC - Macclesfield
+12
+{FT: "1", UO: "U3.5", CS: "2 - 1"}
+******************
+Stoke City - Huddersfield
+8
+{FT: "1", UO: "U3.5", CS: "2 - 1"}
+******************
+Louisville City - Toronto FC II
+47
+{FT: "1", UO: "U3.5", CS: "2 - 1"}
+******************
