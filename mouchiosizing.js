@@ -51,11 +51,11 @@ function getMatchFromRow(row){
 }
 function getHomeFromRow(row){
 
-	return row.getElementsByClassName("home")[0].innerHTML.replace(/[&]nbsp[;]/g,"");
+	return row.getElementsByClassName("home")[0].innerHTML.replace(/[&]nbsp[;]/g,"").replace(/<span.*<[/]span>/g,"");;
 }
 function getAwayFromRow(row){
 
-	return row.getElementsByClassName("away")[1].innerHTML.replace(/[&]nbsp[;]/g,"");
+	return row.getElementsByClassName("away")[1].innerHTML.replace(/[&]nbsp[;]/g,"").replace(/<span.*<[/]span>/g,"");;
 }
 function getLinkFromRow(row){
 
