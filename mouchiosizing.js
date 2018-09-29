@@ -1,8 +1,11 @@
 var totalMatchesToCheck = 0;
 var stepsDone = 0;
+var maxHistory = 0;
+var tempHistory = 20;
 var matches = [];
 var interval = setInterval(countDonePercentage,500);
 var percentages = [];
+var matchPercentages = [];
 getAllPercentages();
 
 function countDonePercentage(){
@@ -28,6 +31,7 @@ function getTable(){
 }
 function getMatchesFromTable(table){
 	var matches = [];
+	maxHistory = 0;
 	var rows = getRowsFromTable(table);
 	totalMatchesToCheck = rows.length;
 	for(row in rows)
@@ -37,9 +41,12 @@ function getMatchesFromTable(table){
 function getRowsFromTable(table){
 	var tRows = table.getElementsByTagName("tr");
 	var rows = [];
+	var count = 0;
 	for(row in tRows){
-		if(tRows[row].className == "onem" || tRows[row].className == "twom")
+		if((maxHistory == 0 || count < maxHistory ) && (tRows[row].className == "onem" || tRows[row].className == "twom")){
 			rows.push(tRows[row]);
+			count++;
+		}
 	}
 	return rows;
 }
@@ -87,6 +94,7 @@ function getTeamPercentage(dom,team){
 function getPrevMatches(dom){
 	var prevMatches = [];
 	var table = dom.getElementsByTagName("table")[1];
+	maxHistory	= tempHistory;
 	var rows = getRowsFromTable(table);
 	for(row in rows)
 		prevMatches.push(rows[row].children[1].innerHTML.replace(/[<]b[>]/g,"").replace(/[<][/]b[>]/g,"")+","+rows[row].children[2].innerHTML+","+rows[row].children[3].innerHTML.replace(/[<]b[>]/g,"").replace(/[<][/]b[>]/g,""));
@@ -107,6 +115,26 @@ function isWin(team,match){
 	var score = toCheck[1].split(":");
 	return (toCheck[0] == team && parseInt(score[0]) > parseInt(score[1]))
 	|| (toCheck[2] == team && parseInt(score[1]) > parseInt(score[0])); 
+}
+function fillTrustTable(){
+	for(match in matches){
+		var h = percentages.find(function(a){ return a.name == matches[match].home;});
+		var a = percentages.find(function(a){ return a.name == matches[match].away;});
+		matchPercentages.push({home:h,away:a,trust:Math.abs(h.trust - a.trust)});
+	}
+}
+function printTrustTable(){
+	var s = "";
+	for(match in matchPercentages){
+		s+= printMatch(matchPercentages[match]);
+	}
+	console.log(s);
+}
+function printMatch(m){
+	return m.home.name+"("+perc(m.home.trust)+") - "+ m.away.name+"("+perc(m.away.trust)+") => Trust: "+perc(Math.abs(m.home.trust - m.away.trust))+"\n";
+}
+function perc(p){
+	return (parseInt(p*10000)/100.0)+"%";
 }
 
 
