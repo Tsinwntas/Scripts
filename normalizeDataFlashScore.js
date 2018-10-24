@@ -82,3 +82,63 @@ function normalise(value, min, max){
 function denormalise(value, min, max){
   return (value + 1) / 2.0 * ( max - min) + min;
 }
+
+function decodeFT(s){
+  s = s.split("\n");
+  for(var i =0 ; i< s.length; i ++){
+    if( i % 2 == 0){
+      var h = parseFloat(s[i].split(" ")[0]);
+      var a = parseFloat(s[i].split(" ")[1]);
+      h = denormalise(h, 0, teams.length -1);
+      a = denormalise(a, 0, teams.length -1);
+      console.log(teams[Math.round(h)] + " - " + teams[Math.round(a)]);
+    }else{
+      var tScore = s[i].split(" ");
+      var toPrint = "";
+      var h = parseFloat(tScore[0]);
+      var x = parseFloat(tScore[1]);
+      var a = parseFloat(tScore[2]);
+      if(h > 0.4) toPrint += "1("+parseInt(h*100)+"%) ";
+      if(x > 0.4) toPrint += "X("+parseInt(x*100)+"%) ";
+      if(a > 0.4) toPrint += "2("+parseInt(a*100)+"%) ";
+      console.log(toPrint);
+    }
+  }
+}
+function decodeO25(s){
+  s = s.split("\n");
+  for(var i =0 ; i< s.length; i ++){
+    if( i % 2 == 0){
+      var h = parseFloat(s[i].split(" ")[0]);
+      var a = parseFloat(s[i].split(" ")[1]);
+      h = denormalise(h, 0, teams.length -1);
+      a = denormalise(a, 0, teams.length -1);
+      console.log(teams[Math.round(h)] + " - " + teams[Math.round(a)]);
+    }else{
+      var score = parseFloat(s[i]);
+      var OU = "O";
+      if(score < 0.4) OU = "U";
+      console.log(OU+"2.5("+parseInt((0.5+Math.abs(0.5-score))*100)+"%)");
+    }
+  }
+}
+function decodeGG(s){
+  s = s.split("\n");
+  for(var i =0 ; i< s.length; i ++){
+    if( i % 2 == 0){
+      var h = parseFloat(s[i].split(" ")[0]);
+      var a = parseFloat(s[i].split(" ")[1]);
+      h = denormalise(h, 0, teams.length -1);
+      a = denormalise(a, 0, teams.length -1);
+      console.log(teams[Math.round(h)] + " - " + teams[Math.round(a)]);
+    }else{
+      var tScore = s[i].split(" ");
+      var toPrint = "";
+      var h = parseFloat(tScore[0]);
+      var a = parseFloat(tScore[1]);
+      toPrint += "homeToScore("+parseInt(h*100)+"%) ";
+      toPrint += "awayToScore("+parseInt(a*100)+"%)";
+      console.log(toPrint);
+    }
+  }
+}
