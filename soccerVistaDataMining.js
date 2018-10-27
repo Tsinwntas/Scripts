@@ -47,7 +47,7 @@ function getTeam(s){
 function normaliseTeams(){
 	teams = teams.sort(function(a,b){return a.name.localeCompare(b.name);});
 	for(var i=0; i < teams.length; i++){
-		teams[i].id = normalise(i, 0, teams.length);
+		teams[i].id = normalise(i, 0, teams.length-1);
 	}
 }
 function normalise(value, min, max){
@@ -123,18 +123,21 @@ function sortMatches(){
 }
 function fitHistoryToNNData(){
 	for(m in matches){
-		if(m > 0){
-			FT+="\n";
-			GG+="\n";
-			O25+="\n";
-			CSv1+="\n";
-			CSv2+="\n";
+		if(getTeamId(matches[m].home) ==-2 || getTeamId(matches[m].away) == -2);
+		else{
+			if(m > 0){
+				FT+="\n";
+				GG+="\n";
+				O25+="\n";
+				CSv1+="\n";
+				CSv2+="\n";
+			}
+			fitToFT(matches[m]);
+			fitToGG(matches[m]);
+			fitToO25(matches[m]);
+			fitToCSv1(matches[m]);
+			fitToCSv2(matches[m]);
 		}
-		fitToFT(matches[m]);
-		fitToGG(matches[m]);
-		fitToO25(matches[m]);
-		fitToCSv1(matches[m]);
-		fitToCSv2(matches[m]);
 	}
 }
 function fitToFT(m){
@@ -175,5 +178,5 @@ function getTeamId(t){
 	var team =teams.find(function(a){ return a.name == t });
 	if(team) 
 		return team.id;
-	else return 1;
+	else return -2;
 }
