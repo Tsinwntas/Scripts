@@ -82,7 +82,6 @@ function printThisPagesLeagueInfo(){
 	var currentLeague;
 	for(r in rows){
 		if(rows[r].className == "headupe"){
-			debugger;
 			currentLeague = getLeague(rows[r]);
 			if(currentLeague.total > 0)
 				console.log(currentLeague.name +" : "+(100.0*currentLeague.won/currentLeague.total)+"%");
@@ -138,7 +137,7 @@ function getRows(table){
 	return table.getElementsByTagName("tr");
 }
 function getLeague(row){
-	var leagueName = row.innerText.replace(/[\s]+/g," ");
+	var leagueName = row.innerText.replace(/[\s]+/g,"");
 	var league = leagues.find(function(a){return a.name == leagueName;});
 	if(!league){
 		league = new League(leagueName);
