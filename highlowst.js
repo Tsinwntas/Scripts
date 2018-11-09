@@ -1,4 +1,7 @@
-var matches = document.getElementsByClassName("ai9");
+var matchClass = "ai9";
+var oddsClass = "a1a";
+
+var matches = document.getElementsByClassName(matchClass);
 
 var ranges = [[1.5,1.59],[1.6,1.69],[1.7,1.79],[1.8,1.89]];
 var twoLowest = [];
@@ -9,8 +12,8 @@ fillArrays();
 
 function fillArrays(){
 	for( var m = 0; m < matches.length; m ++){
-		var h = parseFloat(matches[m].getElementsByClassName("a18")[0].innerText);
-		var a = parseFloat(matches[m].getElementsByClassName("a18")[2].innerText);
+		var h = parseFloat(matches[m].getElementsByClassName(oddsClass)[0].innerText);
+		var a = parseFloat(matches[m].getElementsByClassName(oddsClass)[2].innerText);
 		matches[m].diff = a - h;
 		for(r in ranges){
 			if(isWithingRange(h,ranges[r])){
@@ -43,16 +46,16 @@ function isWithingRange(v,r){
 function clickHighest(){
 	for(r in ranges){
 		if(ranges[r]){
-			matches[twoHighest[r][0]].getElementsByClassName("a18")[0].click();
-			matches[twoHighest[r][1]].getElementsByClassName("a18")[0].click();
+			matches[twoHighest[r][0]].getElementsByClassName(oddsClass)[0].click();
+			matches[twoHighest[r][1]].getElementsByClassName(oddsClass)[0].click();
 		}
 	}
 }
 function clickLowest(){
 	for(r in ranges){
 		if(ranges[r]){
-			matches[twoLowest[r][0]].getElementsByClassName("a18")[0].click();
-			matches[twoLowest[r][1]].getElementsByClassName("a18")[0].click();
+			matches[twoLowest[r][0]].getElementsByClassName(oddsClass)[0].click();
+			matches[twoLowest[r][1]].getElementsByClassName(oddsClass)[0].click();
 		}
 	}
 }
