@@ -42,3 +42,8 @@ function getBetType(row){
 function getYield(row){
   return parseFloat(row.getElementsByClassName("author-profit")[0].innerText.replace(/[\s%]/g,""));
 }
+function mine(d){
+	today = d;
+	getTips();
+	console.log(matches.sort(function(a,b){return b.score - a.score;}));
+}
