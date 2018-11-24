@@ -2,6 +2,7 @@ function Match(name,betType){
 	this.name = name;
 	this.betType = betType;
 	this.score = 0; 
+	this.users = [];
 }
 
 var matches = [];
@@ -14,13 +15,15 @@ function getTips(){
     if(time.includes(today)){
       var name = getName(rows[r]);
       var betType = getBetType(rows[r]);
-      var yield = getYield(rows[r]);
+      var score = getYield(rows[r]);
+      var user = getUser(rows[r]);
       var match = matches.find(function(a){ return a.name == name && a.betType == betType; });
       if(!match){
         match = new Match(name,betType);
         matches.push(match);
       }
-      match.score += yield / 10.0;
+      match.score += score;
+      match.users.push(user);
     }
   }
 }
@@ -41,6 +44,9 @@ function getBetType(row){
 }
 function getYield(row){
   return parseFloat(row.getElementsByClassName("author-profit")[0].innerText.replace(/[\s%]/g,""));
+}
+function getUser(row){
+  return row.getElementsByClassName("ellipsis")[0].innerText;
 }
 function mine(d){
 	today = d;
