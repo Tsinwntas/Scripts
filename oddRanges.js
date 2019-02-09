@@ -51,7 +51,11 @@ function DateString(day,month,year){
 var fromTo = [new DateString(1,7,2018),new DateString(6,2,2019)];
 var started = 0;
 var finished = 0;
+var done = false;
 function DataMine(){
+	started = 0;
+	finished = 0;
+	done = false;
 	donePercentage = setInterval(getDonePercentage,500);
 	var currentDate = new DateString(fromTo[0].day, fromTo[0].month, fromTo[0].year);
 	while(!currentDate.sameDate(fromTo[1])){
@@ -66,6 +70,7 @@ function getDonePercentage(){
 			console.log((100.0*finished/range)+"%");
 		}else{
 			console.log("Done.");
+			done = true;
 			clearInterval(donePercentage);
 		}
 	}
@@ -97,5 +102,26 @@ function Odd(value){
 }
 oddMap = [];
 function getDataInDom(Dom){
-	
+	var onem = document.getElementsByClassName("onem");
+	var twom = document.getElementsByClassName("twom");
+	getDataInRow(onem);
+	getDataInRow(twom);
+
+}
+function getDataInRow(row){
+	for(var i =0; i <row.length; i++){
+		try{
+			var score = parseScore(row[i].getElementsByTagName("a")[0].innerText);
+			var odd = parseFloat(row[i].children[6].innerText);
+			if(isNaN(score)||isNaN(odd))continue;
+			var currOdd = oddMap.find(function(a){return a.value = odd;});
+			if(!currOdd){
+				currOdd = new Odd(odd);
+				oddMap.push(currOdd);
+			}
+			if(score[0] > score[1])
+				currOdd.won ++;
+			currOdd.total++;
+		}catch(){}
+	}
 }

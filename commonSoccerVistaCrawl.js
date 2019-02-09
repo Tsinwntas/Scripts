@@ -49,10 +49,13 @@ function DateString(day,month,year){
 	}
 }
 var fromTo = [new DateString(1,7,2018),new DateString(6,2,2019)];
-
 var started = 0;
 var finished = 0;
+var done = false;
 function DataMine(){
+	started = 0;
+	finished = 0;
+	done = false;
 	donePercentage = setInterval(getDonePercentage,500);
 	var currentDate = new DateString(fromTo[0].day, fromTo[0].month, fromTo[0].year);
 	while(!currentDate.sameDate(fromTo[1])){
@@ -67,6 +70,7 @@ function getDonePercentage(){
 			console.log((100.0*finished/range)+"%");
 		}else{
 			console.log("Done.");
+			done=true;
 			clearInterval(donePercentage);
 		}
 	}
