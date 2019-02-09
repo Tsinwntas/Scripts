@@ -3,6 +3,8 @@ function Match(name,betType){
 	this.betType = betType;
 	this.score = 0; 
 	this.users = [];
+  this.negative = 0;
+  this.positive = 0;
 }
 
 var matches = [];
@@ -22,8 +24,12 @@ function getTips(){
         match = new Match(name,betType);
         matches.push(match);
       }
-      match.score += score;
-      match.users.push(user);
+      if(!match.users.includes(user)){
+        match.score += score;
+        if(score > 0) match.positive ++;
+        else if (score < 0) match.negative ++;
+        match.users.push(user);
+      }
     }
   }
 }
@@ -52,4 +58,7 @@ function mine(d){
 	today = d;
 	getTips();
 	console.log(matches.sort(function(a,b){return b.score - a.score;}));
+}
+function sortByAll(){
+  console.log(matches.sort(function(a,b){ return (a.negative*1000+b.positive*100+b.score) - (b.negative*1000+a.positive*100+a.score);}));
 }
