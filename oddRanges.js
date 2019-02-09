@@ -125,3 +125,15 @@ function getDataInRow(row){
 		}catch(){}
 	}
 }
+var mining;
+function start(){
+	DataMine();
+	mining = setInterval(checkForDone(),500);
+}
+function checkForDone(){
+	if(done){
+		clearInterval(mining);
+		sortData();
+		presentData();
+	}
+}
