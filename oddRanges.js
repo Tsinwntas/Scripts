@@ -59,6 +59,7 @@ function DataMine(){
 	donePercentage = setInterval(getDonePercentage,500);
 	var currentDate = new DateString(fromTo[0].day, fromTo[0].month, fromTo[0].year);
 	while(!currentDate.sameDate(fromTo[1])){
+		console.log(currentDate.stringForm);
 		getDataForCurrentDate(currentDate);
 		currentDate = currentDate.nextDay();
 	}
@@ -100,10 +101,28 @@ function Odd(value){
 	this.won = 0;
 	this.total = 0;
 }
+function Mapping(){
+	this.odds = [];
+	this.averageProfit;
+	this.averageSuccess;
+	this.fixMap = function(){
+		var profit = 0;
+		var won = 0;
+		var total = 0;
+		for(var i =0; i < this.odds.length; i++){
+			profit+=this.odds[i].won*this.odds[i].value;
+			won+= this.odds[i].won;
+			total+=this.odds[i].total;
+		}
+		this.averageProfit = profit*1.0 / total;
+		this.averageSuccess = won*1.0/ total;
+	}
+}
 oddMap = [];
-function getDataInDom(Dom){
-	var onem = document.getElementsByClassName("onem");
-	var twom = document.getElementsByClassName("twom");
+fixedMap = [];
+function getDataInDom(dom){
+	var onem = dom.getElementsByClassName("onem");
+	var twom = dom.getElementsByClassName("twom");
 	getDataInRow(onem);
 	getDataInRow(twom);
 
@@ -113,8 +132,8 @@ function getDataInRow(row){
 		try{
 			var score = parseScore(row[i].getElementsByTagName("a")[0].innerText);
 			var odd = parseFloat(row[i].children[6].innerText);
-			if(isNaN(score)||isNaN(odd))continue;
-			var currOdd = oddMap.find(function(a){return a.value = odd;});
+			if(isNaN(score[0])||isNaN(score[1])||isNaN(odd))continue;
+			var currOdd = oddMap.find(function(a){return a.value == odd;});
 			if(!currOdd){
 				currOdd = new Odd(odd);
 				oddMap.push(currOdd);
@@ -122,18 +141,46 @@ function getDataInRow(row){
 			if(score[0] > score[1])
 				currOdd.won ++;
 			currOdd.total++;
-		}catch(){}
+		}catch(DOMException){
+			console.log(DOMException)
+		}
 	}
+}
+function parseScore(value){
+	var splitted = value.split(":");
+	return [parseFloat(splitted[0]),parseFloat(splitted[1])];
 }
 var mining;
 function start(){
 	DataMine();
-	mining = setInterval(checkForDone(),500);
+	mining = setInterval(checkForDone,500);
 }
 function checkForDone(){
 	if(done){
 		clearInterval(mining);
+		console.log("Fixing Data..");
 		sortData();
+		createMap();
 		presentData();
 	}
+}
+function sortData(){
+	oddMap = oddMap.sort(function(a,b){
+		return a.value - b.value;
+	});
+}
+function createMap(){
+	for(var i =0; i < oddMap.length; i++){
+		for(var j =0; j < oddMap.length; j++){
+			var map = new Mapping();
+			for(var k = 0; k <= j; k++){
+				map.odds.push(oddMap[k]);
+			}
+			map.fixMap();
+			fixedMap.push(map);
+		}
+	}
+}
+function presentData(){
+	console.log(fixedMap);
 }
