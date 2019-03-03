@@ -105,6 +105,7 @@ function Mapping(){
 	this.odds = [];
 	this.averageProfit;
 	this.averageSuccess;
+	this.sampleSize = 0;
 	this.fixMap = function(){
 		var profit = 0;
 		var won = 0;
@@ -114,6 +115,7 @@ function Mapping(){
 			won+= this.odds[i].won;
 			total+=this.odds[i].total;
 		}
+		this.sampleSize = total;
 		this.averageProfit = profit*1.0 / total;
 		this.averageSuccess = won*1.0/ total;
 	}
@@ -171,9 +173,9 @@ function sortData(){
 }
 function createMap(){
 	for(var i =0; i < oddMap.length; i++){
-		for(var j =0; j < oddMap.length; j++){
+		for(var j =i; j < oddMap.length; j++){
 			var map = new Mapping();
-			for(var k = 0; k <= j; k++){
+			for(var k = i; k <= j; k++){
 				map.odds.push(oddMap[k]);
 			}
 			map.fixMap();
