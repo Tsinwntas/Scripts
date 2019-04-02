@@ -9,9 +9,11 @@ function Team(name){
 	this.name = name;
 	this.history = [];
 }
-function Match(home,away){
+function Match(home,away,score,time){
 	this.home = home;
+	this.score = score;
 	this.away = away;
+	this.time = time;
 	this.O = [];
 	this.GG = 0;
 	this.fix = function(){
@@ -186,11 +188,13 @@ function getMatchPrediction(dom,currentDate,matches){
 	var league = getLeagueName(dom);
 	var home = new Team(getTeamName(dom,0));
 	var away = new Team(getTeamName(dom,1));
+	var score = getMatchScore(dom);
+	var time = getMatchTime(dom);
 	var homeHistoryTable = getHistoryTable(dom,0);
 	var awayHistoryTable = getHistoryTable(dom,1);
 	getTeamHistoryInLeague(home,league,homeHistoryTable,currentDate);
 	getTeamHistoryInLeague(away,league,awayHistoryTable,currentDate);
-	var currMatch = new Match(home,away);
+	var currMatch = new Match(home,away,score,time);
 	currMatch.fix();
 	matches.push(currMatch);
 }
@@ -201,6 +205,16 @@ function getLeagueName(dom){
 function getTeamName(dom,index){
 
 	return dom.querySelectorAll("h1[id='gamecss']")[index].innerText;
+}
+function getMatchScore(dom){
+	return dom.getElementsByClassName("score")[0].innerText;
+}
+function getMatchTime(dom){
+	var td = dom.getElementsByTagName("td");
+	for(var i = 0 ; i < td.length; i++){
+		if(td[i].innerText.includes("CEST") || td[i].innerText.includes("CET"))
+			return td[i].innerText;
+	}
 }
 function getHistoryTable(dom,index){
 
