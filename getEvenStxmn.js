@@ -7,27 +7,27 @@ var perc;
 function mineEvenOdds(){
 	var links = getLinks();
 	for( i in links){
-		asyncGetEven(links[i]);
+		asyncGetEven(links[i],i);
 	}
 	perc = setInterval(percentage,1000);
 
 }
-function getEven(dom){
+function getEven(dom,id){
 	var selections = dom.getElementsByClassName("js-selection");
 	for(var i =0; i < selections.length;i ++){
 		try{
 			var splitted = selections[i].innerText.split("\n");
-			if(splitted[2].replace(/[\n \t]*/g,"") == "Even" || splitted[2].replace(/[\n \t]*/g,"") == "Odd"){
+			if(splitted[2].replace(/[\n \t]*/g,"") == "Odd"){
 				//console.log(parseFloat(splitted[3].replace(/[\n \t]*/g,"")));
-				if(parseFloat(splitted[3].replace(/[\n \t]*/g,"")) >= 2)
-				saveMatch(dom);
+				if(parseFloat(splitted[3].replace(/[\n \t]*/g,"")) >= 1.9)
+				saveMatch(dom,id);
 			}
 		}catch(DOMException){}
 	}
 }
-function saveMatch(dom){
+function saveMatch(dom,id){
 	var list = dom.getElementsByClassName(ul)[0];
-	saved.push(list.children[list.children.length - 1].innerText);
+	saved.push([id,list.children[list.children.length - 1].innerText]);
 }
 function getLinks(){
 	var links = [];
@@ -43,21 +43,28 @@ function turnToDom(s){
 	var parser = new DOMParser();
   	return parser.parseFromString(s, "text/html");
 }
-function asyncGetEven(link){
+function asyncGetEven(link,i){
+	console.log("UNCLOG");
 	total++;
-	var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            getEven(turnToDom(xmlHttp.responseText));
-			done++;
-        }
-    }
-    xmlHttp.onerror = function(){
-    	//console.log("Failed to get Data for "+currentDate.stringForm);
-    	done++;
-    }
-    xmlHttp.open("GET", link+"?bt=2", true); // true for asynchronous 
-    xmlHttp.send(null);
+	try{
+		var xmlHttp = new XMLHttpRequest();
+	    xmlHttp.onreadystatechange = function() { 
+	        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+	            getEven(turnToDom(xmlHttp.responseText),i);
+				done++;
+	        }
+	    };
+	    xmlHttp.onerror = function(err){
+	    	console.log("Failed to get Data for "+i);
+	    	done++;
+	    };
+	    if(!link) throw DOMException;
+	    xmlHttp.open("GET", link+"?bt=2", true); // true for asynchronous 
+	    xmlHttp.send(null);
+	}catch(DOMException){
+		console.log("Failed to get Data for "+i);
+		done++;
+	}
 }
 function percentage(){
 	console.log(done/total*100+"%");
@@ -67,7 +74,7 @@ function percentage(){
 	}
 }
 function print(){
-	console.log(saved);
+	console.log(saved.sort(function(a,b){return a[0] - b[0];}));
 }
 function debug(d){
 	console.log(d);
