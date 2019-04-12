@@ -14,14 +14,83 @@ function Match(home,away,score,time){
 	this.score = score;
 	this.away = away;
 	this.time = time;
+	this.FT = [];
 	this.O = [];
 	this.GG = 0;
 	this.fix = function(){
+		this.FT = getFT();
 		for(var i = 0 ; i < 5; i++)
 			this.O[i] = getOver(i);
 		this.GG = getGG();
 	}
 	this.print = function(){}
+	function getFT(){
+		var homeFT =[0,0,0];
+		var homeTotal =home.history.length;
+		var homeFTAtHome = [0,0,0];
+		var homeTotalAtHome =0;
+
+		var awayFT = [0,0,0];
+		var awayTotal = away.history.length;
+		var awayFTAtAway = [0,0,0];
+		var awayTotalAtAway = 0;
+
+		for(var i = 0; i < home.history.length; i++){
+			if(home.history[i].position){
+				homeTotalAtHome++;
+			}
+			var result = getFTResult(home.history[i].score,home.history[i].position);
+			homeFT[result]++;
+			if(home.history[i].position){
+				homeFTAtHome[result]++;
+			}
+		}
+		for(var i = 0; i < away.history.length; i++){
+			if(away.history[i].position){
+				awayTotalAtAway++;
+			}
+			var result = getFTResult(away.history[i].score,away.history[i].position);
+			awayFT[result]++;
+			if(away.history[i].position){
+				awayFTAtAway[result]++;
+			}
+		}
+
+		var homePoints = (homeTotal > 0? homeFT[0] / homeTotal : 0) + (homeTotalAtHome > 0? homeFTAtHome[0] / homeTotalAtHome : 0);
+		var awayPoints = (awayTotal > 0? awayFT[0] / awayTotal : 0) + (awayTotalAtAway > 0? awayFTAtAway[0] / awayTotalAtAway : 0);
+		/*for(var i = 0.50; i <=2; i+=0.5){
+			if(homePoints + awayPoints < i){
+				console.log(i+" "+ homePoints/i  +" "+ awayPoints/i + " "+ (i - homePoints - awayPoints)/i);
+				return [homePoints/i, (i - homePoints - awayPoints)/i,awayPoints/i]
+			}
+		}
+*/
+		var totalHomeWins = ((homeTotal > 0? homeFT[0] / homeTotal : 0) + (homeTotalAtHome > 0? homeFTAtHome[0] / homeTotalAtHome : 0) ) / (homeTotalAtHome > 0 ? 2 :1);
+		var totalAwayWins = ((awayTotal > 0? awayFT[0] / awayTotal : 0) + (awayTotalAtAway > 0? awayFTAtAway[0] / awayTotalAtAway : 0) ) / (awayTotalAtAway > 0 ? 2 :1);
+		var totalHomeDraws = ((homeTotal > 0? homeFT[1] / homeTotal : 0) + (homeTotalAtHome > 0? homeFTAtHome[1] / homeTotalAtHome : 0) ) / (homeTotalAtHome > 0 ? 2 :1);
+		var totalAwayDraws = ((awayTotal > 0? awayFT[1] / awayTotal : 0) + (awayTotalAtAway > 0? awayFTAtAway[1] / awayTotalAtAway : 0) ) / (awayTotalAtAway > 0 ? 2 :1);
+		var totalHomeLost = ((homeTotal > 0? homeFT[2] / homeTotal : 0) + (homeTotalAtHome > 0? homeFTAtHome[2] / homeTotalAtHome : 0) ) / (homeTotalAtHome > 0 ? 2 :1);
+		var totalAwayLost = ((awayTotal > 0? awayFT[2] / awayTotal : 0) + (awayTotalAtAway > 0? awayFTAtAway[2] / awayTotalAtAway : 0) ) / (awayTotalAtAway > 0 ? 2 :1);
+		var total = totalHomeWins + totalAwayWins + totalHomeDraws + totalAwayDraws + totalHomeLost + totalAwayLost;
+		return [(totalHomeWins + totalAwayLost)/total,(totalHomeDraws + totalAwayDraws)/total,(totalAwayWins + totalHomeLost)/total];
+
+/*		debugger;
+		var total = homeTotal + awayTotal;
+		var ft1 = homeFT[0] + awayFT[2];
+		var ft2 = homeFT[2] + awayFT[0];
+		return [ft1/total, (total - ft1 - ft2)/total, ft2/total];*/
+	}
+	function getFTResult(score,position){
+		if(position){
+			if(score[0] > score[1]) return 0;
+			if(score[0] == score[1]) return 1;
+			else return 2;
+		}else{
+			if(score[0] > score[1]) return 2;
+			if(score[0] == score[1]) return 1;
+			else return 1;
+		}
+	}
 	function getOver(bound){
 		var homeTotal = home.history.length;
 		var homeTotalAtHome = 0;
@@ -65,10 +134,10 @@ function Match(home,away,score,time){
 				}
 			}
 		}
-		return ( ((homeOU/homeTotal) + (homeTotalAtHome > 0? homeOUAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) 
-		+ ((homeOUisReason/homeTotal) + (homeTotalAtHome > 0?homeOUisReasonAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1)
-		+ ((awayOU/awayTotal) + (awayTotalAtAway > 0? awayOUAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
-		+ ((awayOUisReason/awayTotal) + (awayTotalAtAway > 0? awayOUisReasonAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1) )/4;
+		return ( ((homeTotal > 0? homeOU/homeTotal : 0) + (homeTotalAtHome > 0? homeOUAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) 
+		+ ((homeOU > 0? homeOUisReason/homeOU : 0) + (homeOUAtHome > 0?homeOUisReasonAtHome/homeOUAtHome : 0))/(homeOUAtHome > 0?2:1)
+		+ ((awayTotal > 0? awayOU/awayTotal : 0) + (awayTotalAtAway > 0? awayOUAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
+		+ ((awayOU > 0? awayOUisReason/awayOU : 0) + (awayOUAtAway > 0? awayOUisReasonAtAway/awayOUAtAway : 0))/(awayOUAtAway > 0?2:1) )/4;
 	}
 	function isOver(score,bound){
 		return score[0] + score[1] > bound;
@@ -121,10 +190,10 @@ function Match(home,away,score,time){
 				}
 			}
 		}
-		return ( ((homeScored/homeTotal) + (homeTotalAtHome > 0? homeScoredAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) 
-		+ ((awayConceded/awayTotal) + (awayTotalAtAway > 0?awayConcededAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
-		+ ((awayScored/awayTotal) + (awayTotalAtAway > 0? awayScoredAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
-		+ ((homeConceded/homeTotal) + (homeTotalAtHome > 0? homeConcededAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) )/4;
+		return ( ((homeTotal > 0 ? homeScored/homeTotal : 0) + (homeTotalAtHome > 0? homeScoredAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) 
+		+ ((awayTotal > 0 ? awayConceded/awayTotal : 0) + (awayTotalAtAway > 0?awayConcededAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
+		+ ((awayTotal > 0 ? awayScored/awayTotal : 0) + (awayTotalAtAway > 0? awayScoredAtAway/awayTotalAtAway : 0))/(awayTotalAtAway > 0?2:1)
+		+ ((homeTotal > 0 ? homeConceded/homeTotal :0) + (homeTotalAtHome > 0? homeConcededAtHome/homeTotalAtHome : 0))/(homeTotalAtHome > 0?2:1) )/4;
 	}
 	function teamScored(position, score){
 		if(position)
@@ -139,9 +208,10 @@ function Match(home,away,score,time){
 			return score[1] > 0;
 	}
 }
-function Record(position,score){
+function Record(position,score,dataArray){
 	this.position = position;
 	this.score = score;
+	this.dataArray = dataArray;
 }
 
 
@@ -228,7 +298,7 @@ function getTeamHistoryInLeague(team,league,historyTable,currentDate){
 			var data = splitData(records[i].innerText);
 			if(isToday(data[0].split("."),currentDate))
 				continue;
-			team.history.push(new Record(getPosition(team.name, data[1]),getScore(data[2])));
+			team.history.push(new Record(getPosition(team.name, data[1]),getScore(data[2]), data));
 		}else if(records[i].innerText.includes(league)){
 			relatable = true;
 		}else{
