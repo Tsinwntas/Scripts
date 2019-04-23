@@ -7,6 +7,7 @@ this.mine = function(){
 }
 function Team(name){
 	this.name = name;
+	this.odds;
 	this.history = [];
 }
 function Match(home,away,score,time){
@@ -258,6 +259,7 @@ function getMatchPrediction(dom,currentDate,matches){
 	var league = getLeagueName(dom);
 	var home = new Team(getTeamName(dom,0));
 	var away = new Team(getTeamName(dom,1));
+	setOdds(home,away);
 	var score = getMatchScore(dom);
 	var time = getMatchTime(dom);
 	var homeHistoryTable = getHistoryTable(dom,0);
@@ -275,6 +277,11 @@ function getLeagueName(dom){
 function getTeamName(dom,index){
 
 	return dom.querySelectorAll("h1[id='gamecss']")[index].innerText;
+}
+function setOdds(home, away){
+	var odds = document.getElementsByClassName("odds");
+	home.odds = !isNaN(odds[0].innerText)? parseFloat(odds[0].innerText) : -1;
+	away.odds = !isNaN(odds[2].innerText)? parseFloat(odds[2].innerText) : -1;
 }
 function getMatchScore(dom){
 	return dom.getElementsByClassName("score")[0].innerText;
