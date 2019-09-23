@@ -292,7 +292,13 @@ function initSupaTips(website){
 function getRowsSupaTips(dom){
 	let cards = dom.querySelectorAll("div[class='card-body']")
 	let upper = cards[0].getElementsByTagName("table")[1].querySelectorAll("tr")
-	let bottom = cards[1].getElementsByTagName("table")[0].querySelectorAll("tr")
+	let bottom;
+	for(card in cards){
+		if(card > 0 && cards[card].getElementsByClassName("table").length > 0){
+			bottom = cards[card].getElementsByTagName("table")[0].querySelectorAll("tr")
+			break;
+		}
+	}
 	let gathered = [];
 	for(var i = 1 ; i < upper.length; i++)
 		gathered.push(upper[i]);
