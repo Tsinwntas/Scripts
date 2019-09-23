@@ -30,7 +30,8 @@ function print(min){
 }
 function initWebsites(){
 	let init = [initSoccerPlatform,initSurePredicts,initWizPredict,initMainBet,
-	initConfirmBets,initSoloPredict,initSoccerVista,initForeBet,initForeBetOU];
+	initConfirmBets,initSoloPredict,initSoccerVista,initForeBet,initForeBetOU,
+	initBetEnsured,initSupaTips,initBettingClosed,initStatArea];
 	init.forEach((initFunction)=>{
 		let website = new Website();
 		initFunction(website);
@@ -66,6 +67,9 @@ function mapPrediction(prediction){
 	}
 	if(prediction.includes("BTTS")){
 		prediction = prediction.replace(/BTTS/,"GG")
+	}
+	if(prediction.includes("BTS")){
+		prediction = prediction.replace(/BTS/,"GG")
 	}
 	switch(true){
 		case prediction.includes("x"): return prediction.toUpperCase();
@@ -258,8 +262,88 @@ function getPredictionForeBetOU(row){
 }
 
 
+//https://www.betensured.com/home
+function initBetEnsured(website){
+	website.link = `https://www.betensured.com/home`;
+	website.getRows = getRowsBetEnsured;
+	website.getTeams = getTeamsBetEnsured;
+	website.getPrediction = getPredictionBetEnsured;
+	website.startFromZero = true;
+}
+function getRowsBetEnsured(dom){
+	return dom.getElementsByClassName("section-body-table")[1].querySelectorAll("tr");
+}
+function getTeamsBetEnsured(row){
+	return row.children[1].innerText.toLowerCase().split(" vs ");
+}
+function getPredictionBetEnsured(row){
+	return row.children[2].innerText;
+}
 
 
+//https://www.supatips.com/
+function initSupaTips(website){
+	website.link = `https://www.supatips.com/`;
+	website.getRows = getRowsSupaTips;
+	website.getTeams = getTeamsSupaTips;
+	website.getPrediction = getPredictionSupaTips;
+	website.startFromZero = true;
+}
+function getRowsSupaTips(dom){
+	let cards = dom.querySelectorAll("div[class='card-body']")
+	let upper = cards[0].getElementsByTagName("table")[1].querySelectorAll("tr")
+	let bottom = cards[1].getElementsByTagName("table")[0].querySelectorAll("tr")
+	let gathered = [];
+	for(var i = 1 ; i < upper.length; i++)
+		gathered.push(upper[i]);
+	for(var i = 1 ; i < bottom.length; i++)
+		gathered.push(bottom[i]);
+	return gathered;
+}
+function getTeamsSupaTips(row){
+	return row.children[row.childElementCount-2].innerText.toLowerCase().split(" vs ");
+}
+function getPredictionSupaTips(row){
+	return row.children[row.childElementCount-1].innerText;
+}
+
+
+//https://www.bettingclosed.com/
+function initBettingClosed(website){
+	website.link = `https://www.bettingclosed.com/`;
+	website.getRows = getRowsBettingClosed;
+	website.getTeams = getTeamsBettingClosed;
+	website.getPrediction = getPredictionBettingClosed;
+	website.startFromZero = true;
+}
+function getRowsBettingClosed(dom){
+	return dom.getElementsByTagName("tbody")[0].querySelectorAll("tr");
+}
+function getTeamsBettingClosed(row){
+	return row.getElementsByClassName("classTeams")[0].innerText.toLowerCase().split(" - ");
+}
+function getPredictionBettingClosed(row){
+	return row.children[1].innerText.split(" ")[0].toUpperCase();
+}
+
+
+//https://www.statarea.com
+function initStatArea(website){
+	website.link = `https://www.statarea.com/predictions`;
+	website.getRows = getRowsStatArea;
+	website.getTeams = getTeamsStatArea;
+	website.getPrediction = getPredictionStatArea;
+	website.startFromZero = true;
+}
+function getRowsStatArea(dom){
+	return dom.getElementsByClassName("predictions")[1].querySelectorAll("div[class='match']");
+}
+function getTeamsStatArea(row){
+	return [row.getElementsByClassName("name")[0].innerText.toLowerCase(),row.getElementsByClassName("name")[1].innerText.toLowerCase()];
+}
+function getPredictionStatArea(row){
+	return row.getElementsByClassName("tip")[0].innerText;
+}
 
 
 
