@@ -12,7 +12,7 @@ function run(){
 function mush(){
 	websites.forEach(website=>{
 		website.predictions.forEach(prediction=>{
-			let curr = predictions.find(p=>p.home==prediction.home && p.away == prediction.away && p.prediction == prediction.prediction)
+			let curr = predictions.find(p=>(p.home==prediction.home || p.away == prediction.away) && p.prediction == prediction.prediction)
 			if(curr){
 				curr.count ++;
 			}else{
@@ -20,10 +20,27 @@ function mush(){
 			}
 		})
 	})
+	predictions.sort((a,b)=>b.count - a.count)
 }
 function print(min){
+	if(predictions.length == 0){
+		console.log("Nothing to print, run mush() first.");
+		return [];
+	}
+	let printed = [];
+	let output = "";
 	predictions.forEach(p=>{
 		if(p.count > min){
+			output += p.check + " " + p.prediction + " - count: " + p.count +"\n";
+			printed.push(p);
+		}
+	})
+	console.log(output);
+	return printed;
+}
+function findAllWithCondition(array,cond){
+	array.forEach(p=>{
+		if(cond(p)){
 			console.log(p)
 		}
 	})
@@ -31,7 +48,8 @@ function print(min){
 function initWebsites(){
 	let init = [initSoccerPlatform,initSurePredicts,initWizPredict,initMainBet,
 	initConfirmBets,initSoloPredict,initSoccerVista,initForeBet,initForeBetOU,
-	initBetEnsured,initSupaTips,initBettingClosed,initStatArea];
+	initBetEnsured,initSupaTips,initBettingClosed,initStatArea,initPredictZ,
+	initFullTimePredict];
 	init.forEach((initFunction)=>{
 		let website = new Website();
 		initFunction(website);
@@ -48,9 +66,26 @@ function mine(dom,website){
 			curr.away = teams[1];
 			curr.prediction = mapPrediction(website.getPrediction(row));
 			curr.check =  capitalise(curr.home) + " v " + capitalise(curr.away);
-			website.predictions.push(curr);
+			if(!matchExists(website.predictions,curr)){
+				website.predictions.push(curr);
+			}
+			// checkForDoubleChance(website.predictions,curr);
 		}
 	})
+}
+function matchExists(pred,match){
+	return pred.find(p=>(p.home==match.home || p.away == match.away) 
+		&& p.match == match.match) != null;
+}
+function checkForDoubleChance(pred, match){
+	if(match.prediction == "1" || match.prediction == "2"){
+		let dcMatch = {...match}
+		dcMatch.prediction = match.prediction == "1" ? "1X" : "X2";
+		debugger;
+		if(!matchExists(pred,dcMatch)){
+			predictions.push(dcMatch);
+		} 
+	}
 }
 function mapPrediction(prediction){
 	if(prediction.match(/Ov[0-9]/)){
@@ -118,7 +153,7 @@ function getTodaySurePredicts(){
 	let m = month > 9 ? month : "0"+month;
 	let year = d.getFullYear();
 	if(d.getDay()%6  != 0)
-		return `https://www.surepredicts.com/${year}/${m}/free-football-predictions-${date}-${month}-${year}.html`
+		return `https://www.surepredicts.com/${year}/${m}/free-football-predictions-${date}-${m}-${year}.html`
 	else
 		return `https://www.surepredicts.com/${year}/${m}/weekend-free-football-predictions.html`
 }
@@ -352,6 +387,57 @@ function getPredictionStatArea(row){
 }
 
 
+//https://www.predictz.com/predictions/
+function initPredictZ(website){
+	website.link = `https://www.predictz.com/predictions/`;
+	website.getRows = getRowsPredictZ;
+	website.getTeams = getTeamsPredictZ;
+	website.getPrediction = getPredictionPredictZ;
+	website.startFromZero = true;
+}
+function getRowsPredictZ(dom){
+	return dom.querySelectorAll("div[class='pttr ptcnt']");
+}
+function getTeamsPredictZ(row){
+	return row.getElementsByClassName("ptgame")[0].innerText.toLowerCase().split(" v ");
+}
+function getPredictionPredictZ(row){
+	let pred = row.getElementsByClassName("ptprd")[0].children[0].innerText.toLowerCase().split(" ");
+	let score = pred[1].split("-");
+	switch(pred[0]){
+		case "home" : return "1"+(parseInt(score[0])>parseInt(score[1])+1 ? "" : "X");
+		case "draw" : return "X";
+		case "away" : return (parseInt(score[1])>parseInt(score[0])+1 ? "" : "X")+"2";
+	}
+	return "";
+}
+
+
+//https://fulltime-predict.com
+function initFullTimePredict(website){
+	website.link = `https://fulltime-predict.com/Today.html`;
+	website.getRows = getRowsFullTimePredict;
+	website.getTeams = getTeamsFullTimePredict;
+	website.getPrediction = getPredictionFullTimePredict;
+	website.startFromZero = true;
+}
+function getRowsFullTimePredict(dom){
+	var t = dom.querySelectorAll("tr")
+	var rows = []
+	t.forEach(row=>{
+		if(row.children[0].tagName == "TD"){
+			rows.push(row)
+	    }
+	})
+	return rows;
+}
+function getTeamsFullTimePredict(row){
+	return row.children[11].innerText.toLowerCase().split(" vs ");
+}
+function getPredictionFullTimePredict(row){
+	return row.children[row.children.length-1].innerText.toUpperCase();
+}
+
 
 
 
@@ -375,7 +461,12 @@ function Match(){
 	this.check;
 }
 function capitalise(s){
-	return s.replace(/^./,s.match(/^./)[0].toUpperCase())
+	try{
+		return s.replace(/^./,s.match(/^./)[0].toUpperCase())
+	}catch(DOMException){
+		console.log(s);
+		return s;
+	}
 }
 
 function getDataFromWebsite(website){
