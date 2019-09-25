@@ -129,11 +129,10 @@ function getTodaySoccerPlatform(){
 	return `https://soccerplatform.me/soccer-predictions-for-${date}-${month}-${year}/`
 }
 function getRowsSoccerPlatform(dom){
-	return document.querySelectorAll("tr[role='row']");
+	return dom.getElementsByTagName("tbody")[0].querySelectorAll("tr");
 }
 function getTeamsSoccerPlatform(row){
-	let split = row.children[1].innerText.toLowerCase().split(" vs ");
-	return [split[0].replace(/[ ]+[(][^)]+[)][ ]*/g,""),split[1].replace(/[ ]+[(][^)]+[)][ ]*/g,"")];
+	return row.children[2].innerText.toLowerCase().split(" vs ");
 }
 function getPredictionSoccerPlatform(row){
 	return row.children[row.children.length-1].innerText;
