@@ -33,7 +33,7 @@ function print(min){
 	let output = "";
 	predictions.forEach(p=>{
 		if(p.count > min){
-			output += p.check + " " + p.prediction + " - count: " + p.count +"\n";
+			output += p.check + " [" + p.prediction + "] - count: " + p.count +"\n";
 			printed.push(p);
 		}
 	})
@@ -52,7 +52,7 @@ function initWebsites(){
 	initConfirmBets,initSoloPredict,initSoccerVista,initForeBet,initForeBetOU,
 	initBetEnsured,initSupaTips,initBettingClosed,initStatArea,initPredictZ,
 	initFullTimePredict,initTips180,initR2Bet,initBetsLoaded,initAllNigeriaFootball,
-	initSportyTrader];
+	initSportyTrader,initVictorsPredict,init1960Tips,initFcPredicts];
 	init.forEach((initFunction)=>{
 		let website = new Website();
 		initFunction(website);
@@ -209,12 +209,20 @@ function getTeamsMainBet(row){
 	return [teams[0], teams[1].split("\n")[0]];
 }
 function getPredictionMainBet(row){
-	let score = row.getElementsByClassName("oyes")[0].innerText.replace(/^[ ]+/,"").split("-");
+	let text = row.getElementsByClassName("oyes")[0].innerText.replace(/^[ ]+/,"")
+	if(!text.match(/[0-9][-][0-9]/)) return specificMapMainBet(text);
+	let score = text.split("-");
 	let home = parseInt(score[0]);
 	let away = parseInt(score[1]);
 	return (home > away ? "1":"") + (Math.abs(home - away) <= 1 ? "X" : "") + (away > home ? "2" : "");
 }
-
+function specificMapMainBet(pred){
+	if(pred.includes("Home")) return pred.replace(/Home[ ]/,"1 & ")
+	if(pred.includes("Away")) return pred.replace(/Away[ ]/,"2 & ")
+	if(pred.includes("HT/FT - ")) return pred.replace(/HT[/]FT[ ][-][ ]/,"");
+	if(pred == "BTTS - No") return "NG";
+	return pred;
+}
 
 //https://confirmbets.com/Free-Football-Predictions
 function initConfirmBets(website){
@@ -467,7 +475,7 @@ function getTeamsTips180(row){
 	return [teams[0].split("\n")[1].replace(/^[^a-z]+/,""),teams[1].replace(/[ ]+$/,"")];
 }
 function getPredictionTips180(row){
-	return row.children[3].innerText;
+	return row.children[3].innerText.replace(/\n[\s]+/,"").replace(/[ ]+$/,"");
 }
 
 
@@ -574,6 +582,70 @@ function specificMapSportyTrader(pred,homeTeam){
 	let draw = pred.includes("Draw") ? "X" : "";
 	let away = pred.includes(homeTeam) ? "" : "2";
 	return home+draw+away;
+}
+
+
+//https://www.victorspredict.com/
+function initVictorsPredict(website){
+	website.link = `https://www.victorspredict.com/`;
+	website.getRows = getRowsVictorsPredict;
+	website.getTeams = getTeamsVictorsPredict;
+	website.getPrediction = getPredictionVictorsPredict;
+	website.startFromZero = true;
+}
+function getRowsVictorsPredict(dom){
+	return dom.getElementsByTagName("tbody")[2].querySelectorAll("tr");
+}
+function getTeamsVictorsPredict(row){
+	return row.children[2].innerText.toLowerCase().split(" vs ");
+}
+function getPredictionVictorsPredict(row){
+	return row.children[3].innerText;
+}
+
+
+//https://www.1960tips.com/
+function init1960Tips(website){
+	website.link = `https://www.1960tips.com/`;
+	website.getRows = getRows1960Tips;
+	website.getTeams = getTeams1960Tips;
+	website.getPrediction = getPrediction1960Tips;
+	website.startFromZero = true;
+}
+function getRows1960Tips(dom){
+	return dom.querySelectorAll("tbody")[3].querySelectorAll("tr[class='changetr'],tr[class='nochangetr']");
+}
+function getTeams1960Tips(row){
+	return row.children[3].innerText.toLowerCase().split(" vs ");
+}
+function getPrediction1960Tips(row){
+	return row.children[5].innerText;
+}
+
+
+//http://fcpredicts.com/football/
+function initFcPredicts(website){
+	website.link = `http://fcpredicts.com/football/`;
+	website.getRows = getRowsFcPredicts;
+	website.getTeams = getTeamsFcPredicts;
+	website.getPrediction = getPredictionFcPredicts;
+	website.startFromZero = true;
+}
+function getRowsFcPredicts(dom){
+	let t = dom.getElementsByTagName("tbody")[1].querySelectorAll("tr");
+	let rows = [];
+	t.forEach((row,index)=>{
+		if(index%2 == 1){
+			rows.push(row);
+		}
+	})
+	return rows;
+}
+function getTeamsFcPredicts(row){
+	return row.children[0].innerText.toLowerCase().split(" vs ");
+}
+function getPredictionFcPredicts(row){
+	return row.children[1].innerText;
 }
 
 
