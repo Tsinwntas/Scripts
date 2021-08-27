@@ -345,21 +345,7 @@ function initSupaTips(website){
 	website.startFromZero = true;
 }
 function getRowsSupaTips(dom){
-	let cards = dom.querySelectorAll("div[class='card-body']")
-	let upper = cards[0].getElementsByTagName("table")[1].querySelectorAll("tr")
-	let bottom;
-	for(card in cards){
-		if(card > 0 && cards[card].getElementsByClassName("table").length > 0){
-			bottom = cards[card].getElementsByTagName("table")[0].querySelectorAll("tr")
-			break;
-		}
-	}
-	let gathered = [];
-	for(var i = 1 ; i < upper.length; i++)
-		gathered.push(upper[i]);
-	for(var i = 1 ; i < bottom.length; i++)
-		gathered.push(bottom[i]);
-	return gathered;
+	return dom.getElementsByTagName("tbody")[1].querySelectorAll("tr");
 }
 function getTeamsSupaTips(row){
 	return row.children[row.childElementCount-2].innerText.toLowerCase().split(" vs ");
@@ -471,8 +457,9 @@ function getRowsTips180(dom){
 	return dom.querySelectorAll("tbody")[0].querySelectorAll("tr");
 }
 function getTeamsTips180(row){
-	let teams = row.children[2].innerText.toLowerCase().split(" vs ");
-	return [teams[0].split("\n")[1].replace(/^[^a-z]+/,""),teams[1].replace(/[ ]+$/,"")];
+	let text = row.children[2].innerText.toLowerCase();
+	let teams = text.includes(" vs ")? text.split(" vs ") : text.split(" v ");
+	return teams.length>1 ? [teams[0].split("\n")[1].replace(/^[^a-z]+/,""),teams[1].replace(/[ ]+$/,"")]:[teams[0],""];
 }
 function getPredictionTips180(row){
 	return row.children[3].innerText.replace(/\n[\s]+/,"").replace(/[ ]+$/,"");

@@ -1,28 +1,42 @@
-FC Kuressaare - Trans Narva
-48
-{FT: "2", UO: "O3.5", CS: "1 - 2"}
-******************
-Parnu - Paide
-47
-{FT: "2", UO: "O3.5", CS: "1 - 2"}
-******************
-O Médéa - Ain M'lila
-4
-{FT: "2", UO: "O3.5", CS: "1 - 2"}
-******************
-MC Oran - MO Béjaïa
-4
-{FT: "2", UO: "O3.5", CS: "1 - 2"}
-******************
-Walsall FC - Macclesfield
-12
-{FT: "1", UO: "U3.5", CS: "2 - 1"}
-******************
-Stoke City - Huddersfield
-8
-{FT: "1", UO: "U3.5", CS: "2 - 1"}
-******************
-Louisville City - Toronto FC II
-47
-{FT: "1", UO: "U3.5", CS: "2 - 1"}
-******************
+Gwarek T. Gory  v  Ruch Chorzow - (1:1)
+Proline FC  v  Busoga - (1:1)
+Bright Stars  v  Tooro Utd - (0:0)
+BUL  v  Kampala City - (0:0)
+Kyetume FC  v  Express SC - (0:0)
+Onduparaka  v  URA SC - (1:0)
+Turnu Magurele  v  SCM Buzau - (1:0)
+Argentino Merlo  v  Dep. Espanol - (1:0)
+Leandro N. Alem  v  Ituzaingó - (1:0)
+AFC Fylde  v  Chesterfield - (1:1)
+Aldershot Town  v  Dover Athletic - (0:1)
+Barnet  v  Bromley - (1:0)
+Barrow  v  Boreham Wood - (1:0)
+Eastleigh  v  Maidenhead Utd - (0:0)
+Ebbsfleet Utd  v  Torquay United - (1:1)
+Halifax Town  v  Chorley FC - (1:0)
+Notts County  v  Dagenham & R. - (0:0)
+Solihull Moors  v  Sutton Utd - (1:0)
+Wrexham  v  Harrogate - (1:1)
+Yeovil Town  v  Woking FC - (0:1)
+Horsham  v  Carshalton - (1:0)
+Margate  v  Leatherhead - (1:0)
+Bamber Bridge  v  Nantwich Town - (2:1)
+Buxton  v  Grantham Town - (1:1)
+Matlock Town  v  Scarborough A. - (1:0)
+Mickleover  v  Morpeth Town - (1:1)
+South Shields  v  Stalybridge - (1:0)
+Stafford R.  v  Witton Albion - (0:0)
+Warrington  v  Lancaster City - (1:1)
+Swindon S.  v  Blackfield & L. - (1:1)
+Yate Town  v  Hartley Wintney - (0:1)
+Hull City W  v  Sheffield FC W - (2:3)
+Oxford Utd W  v  Hounslow W - (4:0)
+Waterford  v  Sligo Rovers - (1:1)
+Atlético  v  Llaneros - (0:0)
+Botafogo SP  v  Figueirense - (1:0)
+Coritiba  v  Guarani - (0:0)
+Operário PR  v  Parana - (1:0)
+Atletico GO  v  Cuiaba - (1:0)
+Criciuma  v  Brasil de P. - (0:0)
+Vitoria  v  Oeste - (0:0)
+Loudoun Utd  v  Saint Louis FC - (1:0)
